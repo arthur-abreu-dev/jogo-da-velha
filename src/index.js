@@ -29,16 +29,23 @@ class Jogo extends React.Component {
         }
     }
 
+    reiniciaJogo() {
+        const quadrados = Array(9).fill(null);
+        this.setState({ quadrados: quadrados, proximoX: true });
+    }
+
     render() {
         const winner = calculateWinner(this.state.quadrados);
         let status;
         if (winner) {
             status = "Ganhador: " + winner;
-        } else {
+        } else if (!winner && !possuiQuadradosVazios(this.state.quadrados)) {
+            status = "Empate :/ ";
+         } else {
             status = "Próximo jogador: " + (this.state.proximoX ? 'X' : 'O');
         }
         return (
-            <div>
+            <div className="quadro">
                 <div className="status">{status}</div>
                 <div className="coluna-jogo">
                     {this.renderQuadrado(0)}
@@ -55,7 +62,9 @@ class Jogo extends React.Component {
                     {this.renderQuadrado(7)}
                     {this.renderQuadrado(8)}
                 </div>
+                <button className="botao-reiniciar" onClick={() => { this.reiniciaJogo() }}>  Reiniciar o Jogo </button>
             </div>
+
         );
     }
 }
@@ -79,7 +88,18 @@ class JogoDaVelha extends React.Component {
     }
 }
 
-function calculateWinner(squares) {
+function possuiQuadradosVazios(quadrados) {
+    let possuivazio = false;
+    for (let index = 0; index < quadrados.length; index++) {
+        if (quadrados[index] == null) {
+            possuivazio = true;
+        }
+    }
+
+    return possuivazio;
+}
+
+function calculateWinner(quadrados) {
     const lines = [
         [0, 1, 2],
         [3, 4, 5],
@@ -92,8 +112,8 @@ function calculateWinner(squares) {
     ];
     for (let i = 0; i < lines.length; i++) {
         const [a, b, c] = lines[i];
-        if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-            return squares[a];
+        if (quadrados[a] && quadrados[a] === quadrados[b] && quadrados[a] === quadrados[c]) {
+            return quadrados[a];
         }
     }
     return null;
